@@ -177,9 +177,9 @@ app_license = "mit"
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "jd_resume_matcher.event.get_events"
-# }
+override_whitelisted_methods = {
+	"process_resumes": "jd_resume_matcher.api.process_resumes",
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
@@ -245,3 +245,5 @@ app_license = "mit"
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
 
+
+website_route_rules = [{'from_route': '/jd-resume-matcher/<path:app_path>', 'to_route': 'jd-resume-matcher'},]
