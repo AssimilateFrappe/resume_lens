@@ -1,4 +1,4 @@
-### Jd Resume Matcher
+### ResumeLens
 
 Assimilate top match resume find from uploaded resume & job description 
 
