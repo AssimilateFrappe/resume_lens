@@ -1,0 +1,15 @@
+{
+  "name": "resume_lens",
+  "version": "1.0.0",
+  "description": "to filter resume with skills & experiance",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd resume-lens && yarn install",
+    "dev": "cd resume-lens && yarn dev",
+    "build": "cd resume-lens && yarn build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
