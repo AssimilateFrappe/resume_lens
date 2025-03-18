@@ -441,7 +441,7 @@ const UploadjobDescription: React.FC = () => {
             try {
                 setLoading(true);
                 // const csrfToken = (window as any).csrf_token;
-                
+
                 const response = await fetch(
                     "/api/method/resume_lens.api.get_all_records", // Adjust API endpoint as needed
                     {
@@ -528,8 +528,8 @@ const UploadjobDescription: React.FC = () => {
 
         const formData = new FormData();
         formData.append("jd_text", jdText);
-        if(job_title_select){
-            formData.append('job_title_select',selectedJobTitle)
+        if (selectedJobTitle) {
+            formData.append('job_title_select', selectedJobTitle)
         }
 
         // if (jobDescFile) {
@@ -541,14 +541,6 @@ const UploadjobDescription: React.FC = () => {
         // });
 
         const csrfToken = (window as any).csrf_token;
-        // console.log("CSRF Token:", csrfToken);
-
-        // if (!csrfToken) {
-        //     console.error("CSRF token not found...");
-        //     setErrorMessage("CSRF token is missing. Please refresh the page.");
-        //     setLoading(false);
-        //     return;
-        // }
 
         try {
             const response = await fetch("/api/method/resume_lens.api.process_resumes",
@@ -561,7 +553,6 @@ const UploadjobDescription: React.FC = () => {
                     body: formData,
                 }
             );
-
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -576,7 +567,6 @@ const UploadjobDescription: React.FC = () => {
 
             const data = await response.json();
             console.log("Response data:", data);
-
 
             if (
                 !data.message?.Matched_Resumes ||
@@ -706,12 +696,13 @@ const UploadjobDescription: React.FC = () => {
         <div className="container">
             <div className="card">
                 <div className="card-header">
-                    <h1>{"Job Description and Resume Matcher"}</h1>
+                    <h1>{"ResumeLens"}</h1>
+                    {/* <p>{"Find top match candidates to shortlist with skills, experience & more"}</p> */}
                 </div>
 
                 <div className="card-body">
                     <form onSubmit={handleSubmit} encType="multipart/form-data">
-                    <div className="form-group">
+                        <div className="form-group">
                             <label htmlFor="job_title_select">
                                 <strong>{"Select Job Title"}</strong>
                             </label>
@@ -930,7 +921,7 @@ const UploadjobDescription: React.FC = () => {
                                         <thead>
                                             <tr>
                                                 <th className="applicant-col" style={{ width: "40%" }}>
-                                                        {"Applicant Name"}
+                                                    {"Applicant Name"}
                                                 </th>
                                                 <th className="resume-col" style={{ width: "40%" }}>
                                                     {"Resume Name"}
@@ -1035,14 +1026,14 @@ const UploadjobDescription: React.FC = () => {
                                                     <tr key={index}>
                                                         <td className="applicant-col">{match.applicant_name}</td>
                                                         <td className="resume-col"><a
-                                                                href="#"
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    handleViewResume(match.view_url, match.resume_name);
-                                                                }}
-                                                            >
-                                                                {match.resume_name}
-                                                            </a></td>
+                                                            href="#"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleViewResume(match.view_url, match.resume_name);
+                                                            }}
+                                                        >
+                                                            {match.resume_name}
+                                                        </a></td>
                                                         <td className="score-col">{match.score}</td>
                                                         <td className="experience-col">
                                                             {match.experience_years}
@@ -1100,14 +1091,14 @@ const UploadjobDescription: React.FC = () => {
                                                     <tr key={index}>
                                                         <td className="applicant-col">{match.applicant_name}</td>
                                                         <td className="resume-col"><a
-                                                                href="#"
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    handleViewResume(match.view_url, match.resume_name);
-                                                                }}
-                                                            >
-                                                                {match.resume_name}
-                                                            </a></td>
+                                                            href="#"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleViewResume(match.view_url, match.resume_name);
+                                                            }}
+                                                        >
+                                                            {match.resume_name}
+                                                        </a></td>
                                                         <td className="score-col">{match.score}</td>
                                                         <td className="experience-col">
                                                             {match.experience_years}
@@ -1162,14 +1153,14 @@ const UploadjobDescription: React.FC = () => {
                                                     <tr key={index}>
                                                         <td className="applicant-col">{match.applicant_name}</td>
                                                         <td className="resume-col"><a
-                                                                href="#"
-                                                                onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    handleViewResume(match.view_url, match.resume_name);
-                                                                }}
-                                                            >
-                                                                {match.resume_name}
-                                                            </a></td>
+                                                            href="#"
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                handleViewResume(match.view_url, match.resume_name);
+                                                            }}
+                                                        >
+                                                            {match.resume_name}
+                                                        </a></td>
                                                         <td className="score-col">{match.score}</td>
                                                         <td className="experience-col">
                                                             {match.experience_years}

@@ -226,11 +226,10 @@ def process_resumes():
         if not allowed_file(resume_file['filename']):
             continue
 
-        resume_path = resume_file['filename']
-
+        resume_path = resume_file['file_path']
         try:
             resume_parsed = parse_resume(resume_path)
-            print(f"resume_path:-- {resume_parsed}")
+            # print(f"resume_path:-- {resume_parsed}")
             print(f"Resume Name: {resume_file['filename']}")
             print(f"Parsed Resume Skills: {resume_parsed.get('resume_skills', [])}")
 
@@ -283,13 +282,13 @@ def process_resumes():
         score = float(resume['score'].strip('%'))
         if score >= 80:
             # resume_data = save_perfect_match(resume, jd_job_title) # Get both URLs
-            resume['file_url'] = resume_data['file_url']
-            resume['view_url'] = resume_data['view_url']
+            # resume['file_url'] = resume['file_url']
+            # resume['view_url'] = resume['view_url']
             matched_resumes["PerfectMatched"].append(resume)
         elif 70 <= score < 80:
             # resume_data = save_perfect_match(resume, jd_job_title) # Get both URLs
-            resume['file_url'] = resume_data['file_url']
-            resume['view_url'] = resume_data['view_url']
+            # resume['file_url'] = resume['file_url']
+            # resume['view_url'] = resume['view_url']
             matched_resumes["TopMatched"].append(resume)
         elif 60 <= score < 70:
             #  resume_data = save_perfect_match(resume, jd_job_title)
@@ -328,7 +327,7 @@ def save_shortlisted_candidates(candidate_score_list, job_opening, jd_required_s
     shortlisted_candidates = []
 
     # Define the categories to be saved
-    allowed_categories = ["PerfectMatched", "TopMatched", "GoodMatched", "PoorMatched", "NotGood"]
+    allowed_categories = ["PerfectMatched", "TopMatched", "GoodMatched"]
 
     # Iterate through the candidate_score_list and filter only required matches
     for category in allowed_categories:
