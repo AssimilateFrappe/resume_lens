@@ -182,7 +182,8 @@ def get_applicant_files():
 def get_job_applicants():
     applicants = frappe.get_all(
         "Job Applicant", 
-        fields=["applicant_name", "email_id", "resume_attachment"]
+        filters={"status": "Open"},
+        fields=["applicant_name", "email_id", "resume_attachment","resume_link"]
     )
 
     if not applicants:
@@ -212,6 +213,7 @@ def process_resumes():
     try:
         if jd_text:
             jd_parsed = parse_jd(jd_text=jd_text)
+            print(f"JD Text: {jd_text}")
     except Exception as e:
         return {'Error': f"Failed to parse job description: {str(e)}"}
 
@@ -225,11 +227,10 @@ def process_resumes():
             continue
 
         resume_path = resume_file['filename']
-        # resume_file.save(resume_path)
 
         try:
             resume_parsed = parse_resume(resume_path)
-            # print(resume_parsed)
+            print(f"resume_path:-- {resume_parsed}")
             print(f"Resume Name: {resume_file['filename']}")
             print(f"Parsed Resume Skills: {resume_parsed.get('resume_skills', [])}")
 
@@ -309,58 +310,6 @@ def process_resumes():
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-# @frappe.whitelist()
-# def save_shortlisted_candidates(candidate_score_list, job_opening, jd_required_skills):
-#     """
-#     Save shortlisted candidates to the 'Shortlisted Candidates' doctype.
-    
-#     :param job_opening: Job title for filtering job applicants.
-#     :param candidate_score_list: List of shortlisted candidates with scores and details.
-#     :param jd_required_skills: List of required skills for the job.
-#     :return: Success or error message.
-#     """
-#     if not job_opening or not candidate_score_list:
-#         return {"status": "error", "message": "Job Opening and Candidate Score List are required."}
-
-#     # Initialize shortlisted candidates list
-#     shortlisted_candidates = []
-#     # Define the categories to be saved
-#     allowed_categories = ["PerfectMatched", "TopMatched", "GoodMatched","PoorMatched","NotGood"]
-
-#     # Iterate through the candidate_score_list and filter only required matches
-#     for category in allowed_categories:
-#         if category in candidate_score_list:
-#             for candidate in candidate_score_list[category]:
-#                 job_applicant = frappe.db.get_value("Job Applicant", {"applicant_name": candidate["applicant_name"]}, "name")
-
-#                 if job_applicant:
-#                     shortlisted_candidates.append({
-#                         "job_applicant": job_applicant,
-#                         "resume_name": candidate["resume_name"],
-#                         "experience_year": candidate["experience_years"],
-#                         "skills_count": candidate["matched_count"],
-#                         "matched_skills": ", ".join(candidate["matched_skills"]),
-#                         "score": candidate["score"]
-#                     })
-
-#     # Check if there are shortlisted candidates
-#     if not shortlisted_candidates:
-#         return {"status": "error", "message": "No valid candidates found for shortlisting."}
-
-#     # Create new Shortlisted Candidates record in Frappe
-#     shortlisted_doc = frappe.get_doc({
-#         "doctype": "Shortlisted Candidates",
-#         "job_opening": job_opening,
-#         "candidate_score_list": shortlisted_candidates,
-#         "jd_required_skills": ", ".join(jd_required_skills)
-#     })
-#     print(f"---------------------------{shortlisted_doc}---------------{shortlisted_candidates}")
-#     shortlisted_doc.insert(ignore_permissions=True)
-#     frappe.db.commit()
-
-#     return {"status": "success", "message": "Shortlisted candidates saved successfully."}
 
 
 @frappe.whitelist()
@@ -578,7 +527,9 @@ def parse_resume(file_path):
 
     total_experience = extract_experience_from_resume(text)
     resume_skills = extract_skills(text)
-    # print("Parsed Resume Skills:", resume_skills)
+    print("Parsed Resume Skills:", resume_skills)
+    print("----------------------")
+    print("Parsed Resume Experience:", total_experience)
 
     return {
         'raw_text': text,
