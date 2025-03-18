@@ -54,7 +54,6 @@ jspm_packages/
 # Aider AI Chat
 .aider*
 resume_lens/public/node_modules
-
 # Dirrectories
 tmp
 temp
