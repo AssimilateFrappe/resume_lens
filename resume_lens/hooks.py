@@ -1,5 +1,5 @@
 app_name = "resume_lens"
-app_title = "Resume Refining"
+app_title = "Resume Lens"
 app_publisher = "AT"
 app_description = "to filter resume with skills & experiance"
 app_email = "write-us@assimilatetechnologies.com"
@@ -15,7 +15,7 @@ app_license = "mit"
 # 	{
 # 		"name": "resume_lens",
 # 		"logo": "/assets/resume_lens/logo.png",
-# 		"title": "Resume Refining",
+# 		"title": "Resume Lens",
 # 		"route": "/resume_lens",
 # 		"has_permission": "resume_lens.api.permission.has_app_permission"
 # 	}
