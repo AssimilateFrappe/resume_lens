@@ -1,8 +1,8 @@
-# ResumeLens - AI-Powered Resume Screening & Job Matching
+# ResumeLens - AI-Powered Resume Screening & Job Matching "Shortlist candidates"
 
-## 📌 Repository: [GitHub - ResumeLens](https://github.com/AssimilateFrappe/resume_lens)
-## 📌 Technologies: Python (Frappe), React (Frontend)
-## 📌 License: MIT
+### 📌 Repository: [GitHub - ResumeLens](https://github.com/AssimilateFrappe/resume_lens)
+### 📌 Technologies: Python (Frappe), React (Frontend)
+### 📌 License: MIT
 
 ---
 
@@ -162,7 +162,7 @@ npm start
 
 The Frappe backend handles resume parsing, job description processing, and secure file handling.
 
-### ✅ Key Functions in `api.py`:
+### ✅ Key Functions: 
 - `generate_download_token(filepath)` – Generates secure tokens for resume downloads.
 - `get_secure_download_url(resume_url)` – Creates a secure download URL.
 - `download_matched_resume(token)` – Serves a resume file for download.
@@ -172,7 +172,7 @@ The Frappe backend handles resume parsing, job description processing, and secur
 
 ## 7. Frontend (React) Implementation
 
-### ✅ Key Features in `UploadJobDescription.tsx`:
+### ✅ Key Features:
 - Fetches job openings from the backend API.
 - Allows users to upload job descriptions (text or file).
 - Uploads resumes and submits them for processing.
