@@ -21,8 +21,10 @@ model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 SITE_URL = frappe.utils.get_url()
 # Define paths
 BASE_DIR = frappe.get_app_path("resume_lens")
-TMP_DIR = frappe.get_site_path("private", "files")
-WHITELISTED_DOWNLOAD_PATHS = ["resumes", "processed_resumes"]
+# TMP_DIR = frappe.get_site_path("private", "files")
+PRIVATE_DIR = frappe.get_site_path("private", "files")
+PUBLIC_DIR = frappe.get_site_path("public", "files")
+WHITELISTED_DOWNLOAD_PATHS = [PRIVATE_DIR, PUBLIC_DIR]
 ALLOWED_EXTENSIONS = {"pdf", "doc", "docx"}
 
 # Store tokens mapped to filepaths for secure downloads and views
@@ -40,12 +42,17 @@ def resolve_file_path(resume_url):
 
     if resume_url.startswith("/private/files/"):
         file_type = "private"
-        file_path = frappe.get_site_path("private", "files", filename)
+        file_path = os.path.join(PRIVATE_DIR, filename)
     else:
         file_type = "public"
-        file_path = frappe.get_site_path("public", "files", filename)
+        file_path = os.path.join(PUBLIC_DIR, filename)
 
     return file_type, file_path, filename
+
+def is_path_allowed(filepath):
+    """Check if the resolved path is within allowed directories"""
+    abs_path = os.path.abspath(filepath)  # Get absolute path
+    return any(abs_path.startswith(os.path.abspath(allowed)) for allowed in WHITELISTED_DOWNLOAD_PATHS)
 
 def get_secure_download_url(resume_url):
     """Generate a secure download URL"""
@@ -56,6 +63,7 @@ def get_secure_download_url(resume_url):
 
 def get_secure_view_url(resume_url):
     """Generate a secure view URL"""
+    print(f"Resume URL: ", resume_url)
     file_type, file_path, filename = resolve_file_path(resume_url)
     token = generate_download_token(file_path)
     site_url = frappe.utils.get_url()
@@ -69,8 +77,7 @@ def download_matched_resume(token):
         frappe.throw("Invalid or expired link", frappe.PermissionError)
 
     # Security check: Ensure file is within allowed paths
-    relative_path = os.path.relpath(filepath, TMP_DIR)
-    if not any(relative_path.startswith(path) for path in WHITELISTED_DOWNLOAD_PATHS):
+    if not is_path_allowed(filepath):
         frappe.throw("Unauthorized folder access", frappe.PermissionError)
 
     with open(filepath, "rb") as f:
@@ -92,8 +99,7 @@ def view_matched_resume(token):
         frappe.throw("Invalid or expired link for viewing", frappe.PermissionError)
 
     # Security check: Ensure file is within allowed paths
-    relative_path = os.path.relpath(filepath, TMP_DIR)
-    if not any(relative_path.startswith(path) for path in WHITELISTED_DOWNLOAD_PATHS):
+    if not is_path_allowed(filepath):
         frappe.throw("Unauthorized folder access for viewing", frappe.PermissionError)
 
     # Determine content type
@@ -102,7 +108,7 @@ def view_matched_resume(token):
         ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ".doc": "application/msword"
     }
-    ext = os.path.splitext(filepath)[1]
+    ext = os.path.splitext(filepath)[1].lower()
     content_type = content_type_map.get(ext, "text/plain")
 
     with open(filepath, "rb") as f:
@@ -231,7 +237,7 @@ def process_resumes():
             resume_parsed = parse_resume(resume_path)
             # print(f"resume_path:-- {resume_parsed}")
             print(f"Resume Name: {resume_file['filename']}")
-            print(f"Parsed Resume Skills: {resume_parsed.get('resume_skills', [])}")
+            # print(f"Parsed Resume Skills: {resume_parsed.get('resume_skills', [])}")
 
             score = score_resume(jd_parsed, resume_parsed)
             percentage_score = score * 100
@@ -244,6 +250,8 @@ def process_resumes():
                 'score': f"{percentage_score:.2f}%",
                 'experience_years': experience_years,
                 'resume_skills': resume_parsed.get('resume_skills', []),
+                'file_url': resume_file['file_url'],
+                'file_path': resume_path
 
             })
             
@@ -280,18 +288,20 @@ def process_resumes():
 
     for resume in filtered_resumes:
         score = float(resume['score'].strip('%'))
+        print(f"resume details: {resume}")
         if score >= 80:
             # resume_data = save_perfect_match(resume, jd_job_title) # Get both URLs
             # resume['file_url'] = resume['file_url']
-            # resume['view_url'] = resume['view_url']
+            
             matched_resumes["PerfectMatched"].append(resume)
         elif 70 <= score < 80:
             # resume_data = save_perfect_match(resume, jd_job_title) # Get both URLs
             # resume['file_url'] = resume['file_url']
-            # resume['view_url'] = resume['view_url']
+            
             matched_resumes["TopMatched"].append(resume)
         elif 60 <= score < 70:
             #  resume_data = save_perfect_match(resume, jd_job_title)
+            
             matched_resumes["GoodMatched"].append(resume)
         elif 50 <= score < 60:
             matched_resumes["PoorMatched"].append(resume)
@@ -301,7 +311,7 @@ def process_resumes():
 
     jd_required_skills = jd_parsed['jd_required_skills']
     resume_data = save_shortlisted_candidates(matched_resumes, jd_job_title, jd_required_skills)
-    print(resume_data)
+    
     return {
         'Matched_Resumes': matched_resumes,
         'jd_required_skills': jd_required_skills
@@ -566,6 +576,8 @@ def filter_resumes_by_experience(resume_scores, min_exp, max_exp, jd_required_sk
                 'experience_years': resume['experience_years'],
                 'matched_skills': list_matched_skills,
                 'matched_count': f'{matched_count} out of {total_jd_skills}',
+                'view_url': get_secure_view_url(resume['file_url']),
+                'test':"testing this data"
             })
     return filtered_resumes
 
