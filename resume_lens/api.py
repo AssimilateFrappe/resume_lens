@@ -64,7 +64,6 @@ def get_secure_view_url(resume_url):
 
 #Download a matched resume based on a provided token.
 @frappe.whitelist(allow_guest=True)
-
 def download_matched_resume(token):
     filepath = TOKEN_MAP.get(token)
     if not filepath or not os.path.exists(filepath):
@@ -85,7 +84,6 @@ def download_matched_resume(token):
 #Securely serve a resume file for viewing if the token is valid
 @frappe.whitelist(allow_guest=True)
 def view_matched_resume(token):
-    
     filepath = TOKEN_MAP.get(token)
     if not filepath or not os.path.exists(filepath):
         frappe.throw("Invalid or expired link for viewing", frappe.PermissionError)
