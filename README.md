@@ -55,6 +55,9 @@ ResumeLens is an AI-powered resume screening and job matching tool designed to a
 - Node.js & npm
 
 ---
+<img width="680" alt="img1" src="https://github.com/user-attachments/assets/0b6b5f0f-0f18-450e-92fb-317925827139" />
+<img width="679" alt="img2" src="https://github.com/user-attachments/assets/5822d5ee-1729-4830-9ac1-79c30b4f5603" />
+
 
 ## 3. Installation & Setup
 
@@ -85,6 +88,11 @@ npm start
 ```
 
 ---
+<img width="585" alt="img3" src="https://github.com/user-attachments/assets/85ac329d-1185-4f74-b7cd-e02f2e2d3058" />
+<img width="453" alt="img4" src="https://github.com/user-attachments/assets/0d51c832-9317-4f17-98ce-b3f44959aae4" />
+<img width="882" alt="img5" src="https://github.com/user-attachments/assets/1020cd63-f98b-4f48-817e-2c1b11b0ba47" />
+<img width="568" alt="img6" src="https://github.com/user-attachments/assets/53d66eea-81ac-499f-8e42-e77ac338ed6d" />
+<img width="591" alt="img7" src="https://github.com/user-attachments/assets/b3009e8e-3efa-4743-a255-98fcfd6df22a" />
 
 ## 4. Features Overview
 
