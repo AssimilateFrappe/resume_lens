@@ -93,6 +93,8 @@ npm start
 <img width="882" alt="img5" src="https://github.com/user-attachments/assets/1020cd63-f98b-4f48-817e-2c1b11b0ba47" />
 <img width="568" alt="img6" src="https://github.com/user-attachments/assets/53d66eea-81ac-499f-8e42-e77ac338ed6d" />
 <img width="591" alt="img7" src="https://github.com/user-attachments/assets/b3009e8e-3efa-4743-a255-98fcfd6df22a" />
+<img width="843" alt="img8" src="https://github.com/user-attachments/assets/7bfcb140-647e-4e74-9660-91009aa53704" />
+
 
 ## 4. Features Overview
 
