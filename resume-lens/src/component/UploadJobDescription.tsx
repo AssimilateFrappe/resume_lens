@@ -246,7 +246,7 @@ const UploadjobDescription: React.FC = () => {
         setViewFileName(fileName);
         setViewFileContentType(null);
         setErrorMessage(null);
-        setIsModalOpen(true);
+        setIsModalOpen(true); 
         try {
             const response = await fetch(viewUrl, {
                 method: "GET",
