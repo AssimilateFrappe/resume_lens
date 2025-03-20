@@ -13,6 +13,7 @@ nlp = spacy.load("en_core_web_sm")
 model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
 SITE_URL = frappe.utils.get_url()
+        
 # Define paths
 BASE_DIR = frappe.get_app_path("resume_lens")
 PRIVATE_DIR = frappe.get_site_path("private", "files")
@@ -52,15 +53,15 @@ def is_path_allowed(filepath):
 def get_secure_download_url(resume_url):
     file_type, file_path, filename = resolve_file_path(resume_url)
     token = generate_download_token(file_path)
-    site_url = frappe.utils.get_url()
-    return f"{site_url}/api/method/resume_lens.api.download_matched_resume?token={token}"
+          
+    return f"/api/method/resume_lens.api.download_matched_resume?token={token}"
 
 #Generates a secure view URL for a given resume URL.
 def get_secure_view_url(resume_url):
     file_type, file_path, filename = resolve_file_path(resume_url)
     token = generate_download_token(file_path)
-    site_url = frappe.utils.get_url()
-    return f"{site_url}/api/method/resume_lens.api.view_matched_resume?token={token}"
+    
+    return f"/api/method/resume_lens.api.view_matched_resume?token={token}"
 
 #Download a matched resume based on a provided token.
 @frappe.whitelist(allow_guest=True)
