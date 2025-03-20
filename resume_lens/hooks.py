@@ -14,10 +14,9 @@ app_license = "mit"
 # add_to_apps_screen = [
 # 	{
 # 		"name": "resume_lens",
-# 		"logo": "/assets/resume_lens/logo.png",
+# 		"logo": "/resume-lens/resume-lens.svg",
 # 		"title": "Resume Lens",
-# 		"route": "/resume_lens",
-# 		"has_permission": "resume_lens.api.permission.has_app_permission"
+# 		"route": "/resume-lens"
 # 	}
 # ]
 
