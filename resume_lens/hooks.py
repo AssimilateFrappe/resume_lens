@@ -85,7 +85,6 @@ app_license = "mit"
 # ------------
 
 # before_install = "resume_lens.install.before_install"
-# after_install = "resume_lens.install.after_install"
 
 # Uninstallation
 # ------------
@@ -173,16 +172,6 @@ app_license = "mit"
 
 # before_tests = "resume_lens.install.before_tests"
 
-# Overriding Methods
-# ------------------------------
-#
-override_whitelisted_methods = {
-	"process_resumes": "resume_lens.api.process_resumes",
-    "get_jd": "resume_lens.api.get_all_records",
-    "get_applicants": "resume_lens.api.get_job_applicants",
-    "shortlisted_candidates": "resume_lens.api.save_shortlisted_candidates"
-}
-#
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
@@ -246,6 +235,18 @@ override_whitelisted_methods = {
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
+# Overriding Methods
+# ------------------------------
+#
+override_whitelisted_methods = {
+	"process_resumes": "resume_lens.api.process_resumes",
+    "get_jd": "resume_lens.api.get_all_records",
+    "get_applicants": "resume_lens.api.get_job_applicants",
+    "shortlisted_candidates": "resume_lens.api.save_shortlisted_candidates"
+}
 
+fixtures = [
+    {"dt": "Workspace", "filters": [["Module", "=", "Resume Lens"]]},
+]
 
 website_route_rules = [{'from_route': '/resume-lens/<path:app_path>', 'to_route': 'resume-lens'}, {'from_route': '/resume-lens/<path:app_path>', 'to_route': 'resume-lens'},]
