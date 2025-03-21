@@ -4,11 +4,11 @@ app_publisher = "AT"
 app_description = "to filter resume with skills & experiance"
 app_email = "write-us@assimilatetechnologies.com"
 app_license = "mit"
-
+ 
 # Apps
 # ------------------
 
-# required_apps = []
+# required_apps = [] 
 
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [

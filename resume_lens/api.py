@@ -442,6 +442,7 @@ def parse_resume(file_path):
         'total_experience': total_experience,
         'resume_skills': resume_skills
     }
+     
 
 #Extract Resume Score from Resume Text match with jd & resume text using sklearn.metrics.pairwise
 def score_resume(jd_parsed, resume_parsed):
