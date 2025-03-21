@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 *.pyc
 *.py~
+*__pycache__/*
+
 
 # Distribution / packaging
 .Python
@@ -55,6 +57,7 @@ jspm_packages/
 .aider*
 resume_lens/public/node_modules
 # Dirrectories
-tmp
-temp
-temp_resume
+node_modules/
+public/node_modules/
+
+
