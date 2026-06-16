@@ -28,13 +28,25 @@ const UploadjobDescription = () => {
       formData.append("resumes", file);
     });
 
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift();
+    };
+
+    const csrfToken = window.csrf_token || getCookie('frappe_csrf_token');
+
     try {
-      const response = await fetch("/xyz", {
+      const response = await fetch("/api/method/resume_lens.api.process_resumes", {
         method: "POST",
+        headers: {
+          "X-Frappe-CSRF-Token": csrfToken || "",
+          "Accept": "application/json",
+        },
         body: formData,
       });
       const data = await response.json();
-      setMatchedData(data); // Store the payload data from backend
+      setMatchedData(data.message?.Matched_Resumes || data.Matched_Resumes || data); 
       setLoading(false);
     } catch (error) {
       console.error("Error fetching the data:", error);

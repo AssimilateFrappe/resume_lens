@@ -180,7 +180,13 @@ const UploadjobDescription: React.FC = () => {
         //     formData.append("resumes_files", file);
         // });
 
-        const csrfToken = (window as any).csrf_token;
+        const getCookie = (name: string) => {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop()?.split(';').shift();
+        };
+
+        const csrfToken = (window as any).csrf_token || getCookie('frappe_csrf_token');
 
         try {
             const response = await fetch("/api/method/resume_lens.api.process_resumes",
@@ -188,7 +194,8 @@ const UploadjobDescription: React.FC = () => {
                     method: "POST",
                     credentials: "include",
                     headers: {
-                        "X-Frappe-CSRF-Token": csrfToken,
+                        "X-Frappe-CSRF-Token": csrfToken || "",
+                        "Accept": "application/json",
                     },
                     body: formData,
                 }
@@ -282,9 +289,9 @@ const UploadjobDescription: React.FC = () => {
     };
 
     // Function to chunk base64 encoding to avoid stack overflow
-    const base64EncodeChunked = (arrayBuffer: ArrayBuffer) => { // ADDED: Type annotation for arrayBuffer
+    const base64EncodeChunked = (arrayBuffer: ArrayBuffer | Uint8Array) => { // FIXED: Accepted either ArrayBuffer or Uint8Array
         let base64String = '';
-        const byteArray = new Uint8Array(arrayBuffer);
+        const byteArray = arrayBuffer instanceof Uint8Array ? arrayBuffer : new Uint8Array(arrayBuffer);
         const chunkSize = 4096; // Adjust chunk size if needed
         for (let i = 0; i < byteArray.length; i += chunkSize) {
             const chunk = byteArray.subarray(i, i + chunkSize);
