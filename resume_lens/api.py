@@ -1,19 +1,16 @@
 import os
 import re
 import secrets
-import spacy
+from functools import lru_cache
+
 import docx2txt
-import pypdf
 import frappe
+import pypdf
+import spacy
+from bs4 import BeautifulSoup
 from sklearn.metrics.pairwise import cosine_similarity
 from sentence_transformers import SentenceTransformer
-from bs4 import BeautifulSoup
 
-nlp = spacy.load("en_core_web_sm")
-model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-
-SITE_URL = frappe.utils.get_url()
-        
 # Define paths
 BASE_DIR = frappe.get_app_path("resume_lens")
 PRIVATE_DIR = frappe.get_site_path("private", "files")
@@ -21,8 +18,17 @@ PUBLIC_DIR = frappe.get_site_path("public", "files")
 WHITELISTED_DOWNLOAD_PATHS = [PRIVATE_DIR, PUBLIC_DIR]
 ALLOWED_EXTENSIONS = {"pdf", "doc", "docx"}
 
-# Store tokens mapped to filepaths for secure downloads and views
-TOKEN_MAP = {}
+TOKEN_MAP: dict[str, str] = {}
+
+
+@lru_cache(maxsize=1)
+def _get_nlp():
+    return spacy.load("en_core_web_sm")
+
+
+@lru_cache(maxsize=1)
+def _get_model():
+    return SentenceTransformer('paraphrase-MiniLM-L6-v2')
 
 #generate token for download file 
 def generate_download_token(filepath):
@@ -112,11 +118,7 @@ def view_matched_resume(token):
 #Extract text form html content
 def strip_html(text):
     soup = BeautifulSoup(text, 'html.parser')
-    
-    for tag in soup.find_all(['p', 'br', 'div', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']):
-        tag.insert_before('\n')
-
-    return ' '.join(soup.get_text().split())
+    return ' '.join(soup.get_text(separator='\n').split())
 
 #Get All Job Opening From Frappe
 @frappe.whitelist(allow_guest=True)
@@ -177,16 +179,16 @@ def get_job_applicants():
 
 #Process resumes by parsing job descriptions and resumes, scoring them, and categorizing them based on match percentage.
 @frappe.whitelist(allow_guest=True)
-def process_resumes():   
-    jd_job_title = frappe.local.form_dict.get('job_title_select') 
-    jd_text = frappe.local.form_dict.get('jd_text')
-    resumes_files = get_applicant_files()
-  
-    if frappe.request.method == "OPTIONS":
+def process_resumes():
+    if frappe.request and frappe.request.method == "OPTIONS":
         frappe.local.response.headers['Access-Control-Allow-Origin'] = '*'
         frappe.local.response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
         frappe.local.response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Frappe-CSRF-Token'
         return {}
+
+    jd_job_title = frappe.local.form_dict.get('job_title_select')
+    jd_text = frappe.local.form_dict.get('jd_text')
+    resumes_files = get_applicant_files()
 
     try:
         if jd_text:
@@ -219,7 +221,7 @@ def process_resumes():
             })
             
         except Exception as e:
-            print(f"Error processing resume {resume_file['filename']}: {e}")
+            frappe.log_error(f"Error processing resume {resume_file['filename']}: {e}", "Resume Lens")
             continue
 
     experience_range = jd_parsed.get('experience', [])
@@ -360,20 +362,30 @@ def extract_text_from_docx(file_path):
 def extract_skills(skills_text):
     skills_text = re.sub(r'[•\-–]', '', skills_text)
     skills_text = re.sub(r'\s+', ' ', skills_text)
+    nlp = _get_nlp()
     doc = nlp(skills_text)
-    excluded_tokens = ['NOUN', 'ADJ', 'PRON', 'CONJ', 'SCONJ', 'ADP', 'AUX', 'VERB', 'DET', 'CCONJ']
-    excluded_symbols = ['etc','to','to', '(', ')', '-', '_', '.', '/', ',', 'e.g.', '\n', ':', '’s',
-                        'to', 'hands','indepth','+', '2', 'complete','master', 'bachelor’s/', 'bachelor',
-                        'engineering/',' ','3','', 'independently', 'ip', 'identity', 'closely', 'http',
-                        'framework', 'one', 'highly', 'pipeline', 'serverless', 'strong', 'compute', 'code',
-                        'experience', 'web', 'storage', 'also', 'lambda', 'access', 'simple',
-                        'quickly', 'especially', 'certification', 'elastic', 'developer', 'information',
-                        'infrastructure', 'iam', 'service', 'effectively','management', 'dependency', 'entity',
-                        '10', 'core', 'parallel', 'async', 'basics', 'security', 'patterns', 'json','good',
-                        '!','~','`','@','$','%','^','*',]
+    excluded_tokens = frozenset({'NOUN', 'ADJ', 'PRON', 'CONJ', 'SCONJ', 'ADP', 'AUX', 'VERB', 'DET', 'CCONJ'})
+    excluded_symbols = {
+        'etc', 'to', '(', ')', '-', '_', '.', '/', ',', 'e.g.', '\n', ':', '’s',
+        'hands', 'indepth', '+', '2', 'complete', 'master', 'bachelor\'s/', 'bachelor',
+        'engineering/', ' ', '3', '', 'independently', 'ip', 'identity', 'closely', 'http',
+        'framework', 'one', 'highly', 'pipeline', 'serverless', 'strong', 'compute', 'code',
+        'experience', 'web', 'storage', 'also', 'lambda', 'access', 'simple',
+        'quickly', 'especially', 'certification', 'elastic', 'developer', 'information',
+        'infrastructure', 'iam', 'service', 'effectively', 'management', 'dependency', 'entity',
+        '10', 'core', 'parallel', 'async', 'basics', 'security', 'patterns', 'json', 'good',
+        '!', '~', '`', '@', '$', '%', '^', '*',
+    }
 
-    excluded_symbols.extend(str(num) for num in range(1, 100001))
-    skills = [token.text.lower() for token in doc if token.pos_ not in excluded_tokens and token.text.lower() not in excluded_symbols]
+    def _is_excluded(token_text):
+        lowered = token_text.lower()
+        if lowered in excluded_symbols:
+            return True
+        if lowered.isdigit():
+            return True
+        return False
+
+    skills = [token.text.lower() for token in doc if token.pos_ not in excluded_tokens and not _is_excluded(token.text)]
     return list(set(skills))
 
 #Parse Job Description file like [pdf,doc,docx] and return text
@@ -393,6 +405,7 @@ def parse_jd(jd_file=None, jd_text=None):
     else:
         return {'error': 'No input provided'}
 
+    nlp = _get_nlp()
     doc = nlp(text)
     experience = extract_experience(text)
     
@@ -446,6 +459,7 @@ def parse_resume(file_path):
 
 #Extract Resume Score from Resume Text match with jd & resume text using sklearn.metrics.pairwise
 def score_resume(jd_parsed, resume_parsed):
+    model = _get_model()
     jd_embedding = model.encode(jd_parsed['raw_text'])
     resume_embedding = model.encode(resume_parsed['raw_text'])
     similarity_score = cosine_similarity([jd_embedding], [resume_embedding])[0][0]

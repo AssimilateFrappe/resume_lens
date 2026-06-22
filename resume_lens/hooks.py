@@ -249,4 +249,6 @@ fixtures = [
     {"dt": "Workspace", "filters": [["Module", "=", "Resume Lens"]]},
 ]
 
-website_route_rules = [{'from_route': '/resume-lens/<path:app_path>', 'to_route': 'resume-lens'}, {'from_route': '/resume-lens/<path:app_path>', 'to_route': 'resume-lens'},]
+website_route_rules = [
+    {'from_route': '/resume-lens/<path:app_path>', 'to_route': 'resume-lens'},
+]
